@@ -118,6 +118,13 @@ Route::middleware(['auth'])->group(function () {
 
     // Products
     Route::middleware(['permission:product-view'])->group(function () {
+        Route::middleware(['permission:product-create'])->group(function () {
+            Route::get('/products/create', [ProductController::class, 'create'])
+                ->name('products.create');
+
+            Route::post('/products', [ProductController::class, 'store'])
+                ->name('products.store');
+        });
         Route::get('/products', [ProductController::class, 'index'])
             ->name('products.index');
 
@@ -131,13 +138,6 @@ Route::middleware(['auth'])->group(function () {
             ->name('products.price-history');
     });
 
-    Route::middleware(['permission:product-create'])->group(function () {
-        Route::get('/products/create', [ProductController::class, 'create'])
-            ->name('products.create');
-
-        Route::post('/products', [ProductController::class, 'store'])
-            ->name('products.store');
-    });
 
     Route::middleware(['permission:product-edit'])->group(function () {
         Route::get('/products/{product}/edit', [ProductController::class, 'edit'])
@@ -230,6 +230,14 @@ Route::middleware(['auth'])->group(function () {
 
     // Purchases
     Route::middleware(['permission:purchase-view'])->group(function () {
+
+        Route::middleware(['permission:purchase-create'])->group(function () {
+            Route::get('/purchases/create', [PurchaseController::class, 'create'])
+                ->name('purchases.create');
+
+            Route::post('/purchases', [PurchaseController::class, 'store'])
+                ->name('purchases.store');
+        });
         Route::get('/purchases', [PurchaseController::class, 'index'])
             ->name('purchases.index');
 
@@ -238,14 +246,6 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('/purchases/{purchase}', [PurchaseController::class, 'show'])
             ->name('purchases.show');
-    });
-
-    Route::middleware(['permission:purchase-create'])->group(function () {
-        Route::get('/purchases/create', [PurchaseController::class, 'create'])
-            ->name('purchases.create');
-
-        Route::post('/purchases', [PurchaseController::class, 'store'])
-            ->name('purchases.store');
     });
 
     Route::middleware(['permission:purchase-edit'])->group(function () {
@@ -266,22 +266,60 @@ Route::middleware(['auth'])->group(function () {
 
     // Sales
     Route::middleware(['permission:sale-view'])->group(function () {
+
+        Route::middleware(['permission:sale-create'])->group(function () {
+            Route::get('/sales/create', [SaleController::class, 'create'])
+                ->name('sales.create');
+
+            Route::post('/sales', [SaleController::class, 'store'])
+                ->name('sales.store');
+        });
+
+        Route::middleware(['permission:sale-edit'])->group(function () {
+            Route::get('/sales/{sale}/edit', [SaleController::class, 'edit'])
+                ->name('sales.edit');
+
+            Route::put('/sales/{sale}', [SaleController::class, 'update'])
+                ->name('sales.update');
+        });
+
         Route::get('/sales', [SaleController::class, 'index'])
             ->name('sales.index');
 
         Route::get('/sales/data', [SaleController::class, 'getData'])
             ->name('sales.data');
 
+        // Must come before {sale} route
+        Route::get('/sales/products-by-warehouse', [SaleController::class, 'getProductsByWarehouse'])
+            ->name('sales.products-by-warehouse');
+
         Route::get('/sales/{sale}', [SaleController::class, 'show'])
             ->name('sales.show');
-    });
+        // PDF routes
+        Route::get('/sales/{sale}/pdf', [SaleController::class, 'generatePdf'])
+            ->name('sales.pdf');
+        Route::get('/sales/{sale}/pdf/download', [SaleController::class, 'downloadPdf'])
+            ->name('sales.pdf.download');
+        // Actions on sales
+        Route::middleware(['permission:sale-validate'])->group(function () {
+            Route::post('/sales/{sale}/validate', [SaleController::class, 'validate'])
+                ->name('sales.validate');
+        });
 
-    Route::middleware(['permission:sale-create'])->group(function () {
-        Route::get('/sales/create', [SaleController::class, 'create'])
-            ->name('sales.create');
+        Route::middleware(['permission:sale-convert'])->group(function () {
+            Route::post('/sales/{sale}/convert', [SaleController::class, 'convert'])
+                ->name('sales.convert');
+        });
 
-        Route::post('/sales', [SaleController::class, 'store'])
-            ->name('sales.store');
+        Route::middleware(['permission:sale-payment'])->group(function () {
+            Route::post('/sales/{sale}/add-payment', [SaleController::class, 'addPayment'])
+                ->name('sales.add-payment');
+        });
+
+        Route::middleware(['permission:sale-delete'])->group(function () {
+            Route::delete('/sales/{sale}', [SaleController::class, 'destroy'])
+                ->name('sales.destroy');
+        });
     });
 
     Route::middleware(['permission:sale-edit'])->group(function () {

@@ -44,7 +44,7 @@ class AuthController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Connexion réussie! Bienvenue ' . Auth::user()->name,
-                'redirect' => route('categories.index')
+                'redirect' => route('dashboard')
             ]);
         }
 

@@ -19,37 +19,40 @@ class POSController extends Controller
         $warehouses = Warehouse::where('type', 'point_vente')
             ->where('is_active', true)
             ->get();
-        
+
         return view('pos.index', compact('warehouses'));
     }
 
     public function screen(Request $request)
     {
         $warehouseId = $request->warehouse_id;
-        
+
         if (!$warehouseId) {
             return redirect()->route('pos.index')->with('error', 'Veuillez sélectionner un point de vente');
         }
-        
+
         $warehouse = Warehouse::findOrFail($warehouseId);
-        
+
         if ($warehouse->type !== 'point_vente') {
             return redirect()->route('pos.index')->with('error', 'L\'entrepôt sélectionné n\'est pas un point de vente');
         }
-        
+
         // Récupérer les produits disponibles dans ce point de vente
-        $products = Product::whereHas('stocks', function($query) use ($warehouseId) {
+        $products = Product::whereHas('stocks', function ($query) use ($warehouseId) {
             $query->where('warehouse_id', $warehouseId)
-                  ->where('quantity', '>', 0);
+                ->where('quantity', '>', 0);
         })
-        ->with(['stocks' => function($query) use ($warehouseId) {
-            $query->where('warehouse_id', $warehouseId);
-        }, 'category'])
-        ->where('is_active', true)
-        ->get();
-        
+            ->with([
+                'stocks' => function ($query) use ($warehouseId) {
+                    $query->where('warehouse_id', $warehouseId);
+                },
+                'category'
+            ])
+            ->where('is_active', true)
+            ->get();
+
         $customers = Customer::where('is_active', true)->get();
-        
+
         return view('pos.screen', compact('warehouse', 'products', 'customers'));
     }
 
@@ -57,27 +60,30 @@ class POSController extends Controller
     {
         $warehouseId = $request->warehouse_id;
         $search = $request->search;
-        
-        $query = Product::whereHas('stocks', function($query) use ($warehouseId) {
+
+        $query = Product::whereHas('stocks', function ($query) use ($warehouseId) {
             $query->where('warehouse_id', $warehouseId)
-                  ->where('quantity', '>', 0);
+                ->where('quantity', '>', 0);
         })
-        ->with(['stocks' => function($query) use ($warehouseId) {
-            $query->where('warehouse_id', $warehouseId);
-        }, 'category'])
-        ->where('is_active', true);
-        
+            ->with([
+                'stocks' => function ($query) use ($warehouseId) {
+                    $query->where('warehouse_id', $warehouseId);
+                },
+                'category'
+            ])
+            ->where('is_active', true);
+
         if ($search) {
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('code', 'like', "%{$search}%")
-                  ->orWhere('reference', 'like', "%{$search}%")
-                  ->orWhere('barcode', 'like', "%{$search}%");
+                    ->orWhere('code', 'like', "%{$search}%")
+                    ->orWhere('reference', 'like', "%{$search}%")
+                    ->orWhere('barcode', 'like', "%{$search}%");
             });
         }
-        
+
         $products = $query->get();
-        
+
         return response()->json([
             'success' => true,
             'data' => $products
@@ -88,29 +94,32 @@ class POSController extends Controller
     {
         $warehouseId = $request->warehouse_id;
         $barcode = $request->barcode;
-        
-        $product = Product::where(function($query) use ($barcode) {
+
+        $product = Product::where(function ($query) use ($barcode) {
             $query->where('barcode', $barcode)
-                  ->orWhere('code', $barcode)
-                  ->orWhere('reference', $barcode);
+                ->orWhere('code', $barcode)
+                ->orWhere('reference', $barcode);
         })
-        ->whereHas('stocks', function($query) use ($warehouseId) {
-            $query->where('warehouse_id', $warehouseId)
-                  ->where('quantity', '>', 0);
-        })
-        ->with(['stocks' => function($query) use ($warehouseId) {
-            $query->where('warehouse_id', $warehouseId);
-        }, 'category'])
-        ->where('is_active', true)
-        ->first();
-        
+            ->whereHas('stocks', function ($query) use ($warehouseId) {
+                $query->where('warehouse_id', $warehouseId)
+                    ->where('quantity', '>', 0);
+            })
+            ->with([
+                'stocks' => function ($query) use ($warehouseId) {
+                    $query->where('warehouse_id', $warehouseId);
+                },
+                'category'
+            ])
+            ->where('is_active', true)
+            ->first();
+
         if (!$product) {
             return response()->json([
                 'success' => false,
                 'message' => 'Produit introuvable ou stock insuffisant'
             ], 404);
         }
-        
+
         return response()->json([
             'success' => true,
             'data' => $product
@@ -122,11 +131,11 @@ class POSController extends Controller
         $productId = $request->product_id;
         $warehouseId = $request->warehouse_id;
         $quantity = $request->quantity;
-        
+
         $stock = Stock::where('product_id', $productId)
             ->where('warehouse_id', $warehouseId)
             ->first();
-        
+
         if (!$stock || $stock->quantity < $quantity) {
             return response()->json([
                 'success' => false,
@@ -134,7 +143,7 @@ class POSController extends Controller
                 'available_quantity' => $stock ? $stock->quantity : 0
             ], 400);
         }
-        
+
         return response()->json([
             'success' => true,
             'available_quantity' => $stock->quantity
@@ -157,10 +166,10 @@ class POSController extends Controller
 
         try {
             DB::beginTransaction();
-            
+
             // Client par défaut si non spécifié
             $customerId = $validated['customer_id'] ?? Customer::where('code', 'CLI-DEFAULT')->first()?->id;
-            
+
             if (!$customerId) {
                 // Créer un client par défaut s'il n'existe pas
                 $defaultCustomer = Customer::create([
@@ -172,9 +181,9 @@ class POSController extends Controller
                 ]);
                 $customerId = $defaultCustomer->id;
             }
-            
+
             $customer = Customer::find($customerId);
-            
+
             // Créer la vente
             $sale = Sale::create([
                 'type' => 'facture',
@@ -193,7 +202,7 @@ class POSController extends Controller
                 $stock = Stock::where('product_id', $item['product_id'])
                     ->where('warehouse_id', $validated['warehouse_id'])
                     ->first();
-                
+
                 // Vérifier le stock
                 if (!$stock || $stock->quantity < $item['quantity']) {
                     DB::rollBack();
@@ -202,9 +211,9 @@ class POSController extends Controller
                         'message' => "Stock insuffisant pour le produit: {$product->name}"
                     ], 400);
                 }
-                
+
                 $costPrice = $stock->average_cost;
-                
+
                 $detail = new SaleDetail([
                     'product_id' => $item['product_id'],
                     'quantity' => $item['quantity'],
@@ -212,14 +221,14 @@ class POSController extends Controller
                     'cost_price' => $costPrice,
                     'tva_rate' => $product->tva_rate,
                 ]);
-                
+
                 $detail->calculateTotals();
                 $sale->details()->save($detail);
             }
 
             // Calculer les totaux
             $sale->calculateTotals();
-            
+
             // Vérifier la limite de crédit si vente à crédit
             if ($sale->is_credit) {
                 if (!$customer->canBuyOnCredit($sale->total_ttc)) {
@@ -230,11 +239,11 @@ class POSController extends Controller
                     ], 400);
                 }
             }
-            
+
             // Valider automatiquement la vente POS
             $sale->status = 'valide';
             $sale->save();
-            
+
             // Enregistrer le paiement si payé
             if ($validated['amount_paid'] > 0) {
                 $sale->addPayment(
@@ -244,16 +253,16 @@ class POSController extends Controller
                     'Paiement POS'
                 );
             }
-            
+
             DB::commit();
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Vente enregistrée avec succès',
                 'data' => $sale->load('details.product', 'customer'),
                 'change' => max(0, $validated['amount_paid'] - $sale->total_ttc)
             ]);
-            
+
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
@@ -266,24 +275,24 @@ class POSController extends Controller
     public function printReceipt(Sale $sale)
     {
         $sale->load(['customer', 'warehouse', 'details.product']);
-        
+
         return view('pos.receipt', compact('sale'));
     }
 
     public function todaySales(Request $request)
     {
         $warehouseId = $request->warehouse_id;
-        
+
         $sales = Sale::where('warehouse_id', $warehouseId)
             ->where('from_pos', true)
             ->whereDate('sale_date', today())
             ->with(['customer', 'user'])
             ->orderBy('created_at', 'desc')
             ->get();
-        
+
         $totalSales = $sales->where('status', 'valide')->sum('total_ttc');
         $totalTransactions = $sales->where('status', 'valide')->count();
-        
+
         return response()->json([
             'success' => true,
             'data' => [

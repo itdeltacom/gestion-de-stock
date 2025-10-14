@@ -11,6 +11,8 @@ use App\Models\Stock;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 
 class SaleController extends Controller
 {
@@ -508,5 +510,42 @@ class SaleController extends Controller
             'success' => true,
             'data' => $products
         ]);
+    }
+
+
+    /**
+     * Generate PDF for viewing
+     */
+    public function generatePdf(Sale $sale)
+    {
+        $sale->load(['customer', 'warehouse', 'user', 'details.product', 'payments', 'creditSchedules']);
+
+        $pdf = Pdf::loadView('sales.pdf', compact('sale'))
+            ->setPaper('a4', 'portrait')
+            ->setOptions([
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => true,
+                'defaultFont' => 'DejaVu Sans'
+            ]);
+
+        return $pdf->stream($sale->reference . '.pdf');
+    }
+
+    /**
+     * Download PDF
+     */
+    public function downloadPdf(Sale $sale)
+    {
+        $sale->load(['customer', 'warehouse', 'user', 'details.product', 'payments', 'creditSchedules']);
+
+        $pdf = Pdf::loadView('sales.pdf', compact('sale'))
+            ->setPaper('a4', 'portrait')
+            ->setOptions([
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => true,
+                'defaultFont' => 'DejaVu Sans'
+            ]);
+
+        return $pdf->download($sale->reference . '.pdf');
     }
 }
