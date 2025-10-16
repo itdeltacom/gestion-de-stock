@@ -44,7 +44,7 @@
     <div class="row">
         <div class="col-12">
             <div class="card mb-4">
-                <div class="card-header pb-0">
+                <div class="card-header pb-1">
                     <div class="d-flex align-items-center">
                         <h6>Gestion des Catégories</h6>
                         <div class="ms-auto">
@@ -58,7 +58,7 @@
                     </div>
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
-                    <div class="table-responsive p-0">
+                    <div class="table-responsive px-2">
                         <table class="table align-items-center mb-0" id="categoriesTable">
                             <thead>
                                 <tr>
@@ -201,7 +201,7 @@
                     { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
                     { data: 'code', name: 'code' },
                     { data: 'name', name: 'name' },
-                    // { data: 'full_path', name: 'full_path' },
+                    { data: 'full_path', name: 'full_path' },
                     { data: 'parent_name', name: 'parent.name' },
                     { data: 'products_count', name: 'products_count', className: 'text-center' },
                     { data: 'status_badge', name: 'is_active', className: 'text-center' },

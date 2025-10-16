@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 
@@ -16,6 +17,7 @@ class Product extends Model
         'code',
         'reference',
         'barcode',
+        'featured_image',  // Ajoutez ceci
         'description',
         'category_id',
         'tva_rate',
@@ -50,74 +52,66 @@ class Product extends Model
         parent::boot();
 
         static::creating(function ($product) {
-            // Générer le code si non fourni
             if (empty($product->code)) {
                 $lastProduct = self::orderBy('code', 'desc')->first();
-                
+
                 if ($lastProduct) {
                     $lastNumber = (int) substr($lastProduct->code, 3);
                     $newNumber = $lastNumber + 1;
                 } else {
                     $newNumber = 1;
                 }
-                
+
                 $product->code = 'PRD' . str_pad($newNumber, 6, '0', STR_PAD_LEFT);
             }
 
-            // Générer le code-barres à partir de la référence
             if (!empty($product->reference) && empty($product->barcode)) {
                 $product->barcode = self::generateBarcodeFromReference($product->reference);
             }
         });
 
         static::updating(function ($product) {
-            // Regénérer le code-barres si la référence change
             if ($product->isDirty('reference') && !empty($product->reference)) {
                 $product->barcode = self::generateBarcodeFromReference($product->reference);
             }
         });
+
+        static::deleting(function ($product) {
+            // Delete featured image
+            if ($product->featured_image && Storage::exists($product->featured_image)) {
+                Storage::delete($product->featured_image);
+            }
+
+            // Delete gallery images
+            foreach ($product->images as $image) {
+                if (Storage::exists($image->image_path)) {
+                    Storage::delete($image->image_path);
+                }
+                $image->delete();
+            }
+        });
     }
 
-    /**
-     * Générer un code-barres EAN-13 à partir de la référence interne
-     * Format: 200 (préfixe interne) + 9 chiffres de la référence + 1 chiffre de contrôle
-     */
     public static function generateBarcodeFromReference($reference)
     {
-        // Convertir la référence en chiffres (enlever les caractères non numériques)
         $numericReference = preg_replace('/[^0-9]/', '', $reference);
-        
-        // Si la référence contient moins de 9 chiffres, compléter avec des zéros
         $numericReference = str_pad($numericReference, 9, '0', STR_PAD_LEFT);
-        
-        // Prendre seulement les 9 premiers chiffres
         $numericReference = substr($numericReference, 0, 9);
-        
-        // Préfixe 200 (code interne pour identifier nos produits)
         $barcode = '200' . $numericReference;
-        
-        // Calculer le chiffre de contrôle EAN-13
         $checkDigit = self::calculateEAN13CheckDigit($barcode);
-        
         return $barcode . $checkDigit;
     }
 
-    /**
-     * Calculer le chiffre de contrôle EAN-13
-     */
     private static function calculateEAN13CheckDigit($code)
     {
         $sum = 0;
         for ($i = 0; $i < 12; $i++) {
-            $sum += (int)$code[$i] * (($i % 2 === 0) ? 1 : 3);
+            $sum += (int) $code[$i] * (($i % 2 === 0) ? 1 : 3);
         }
         $checkDigit = (10 - ($sum % 10)) % 10;
         return $checkDigit;
     }
 
-    /**
-     * Méthode pour regénérer manuellement le code-barres
-     */
     public function regenerateBarcode()
     {
         if (!empty($this->reference)) {
@@ -157,6 +151,30 @@ class Product extends Model
         return $this->hasMany(StockFifo::class);
     }
 
+    // AJOUTEZ CETTE RELATION
+    public function images()
+    {
+        return $this->hasMany(ProductImage::class)->orderBy('sort_order');
+    }
+
+    // Image Methods
+    public function getFeaturedImageUrlAttribute()
+    {
+        if ($this->featured_image && Storage::disk('public')->exists($this->featured_image)) {
+            return Storage::url($this->featured_image);
+        }
+        return asset('assets/img/no-image.svg');
+    }
+
+    public function deleteFeaturedImage()
+    {
+        if ($this->featured_image && Storage::disk('public')->exists($this->featured_image)) {
+            Storage::disk('public')->delete($this->featured_image);
+            $this->featured_image = null;
+            $this->save();
+        }
+    }
+
     // Méthodes utiles
     public function getTotalStock()
     {
@@ -186,15 +204,14 @@ class Product extends Model
         return (($this->price - $this->current_average_cost) / $this->current_average_cost) * 100;
     }
 
-    // Calcul du CMUP
     public function updateAverageCost($newQuantity, $newCost)
     {
         $currentTotalStock = $this->getTotalStock();
         $currentTotalValue = $currentTotalStock * $this->current_average_cost;
-        
+
         $newTotalValue = $currentTotalValue + ($newQuantity * $newCost);
         $newTotalStock = $currentTotalStock + $newQuantity;
-        
+
         if ($newTotalStock > 0) {
             $this->current_average_cost = $newTotalValue / $newTotalStock;
             $this->save();

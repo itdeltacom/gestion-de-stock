@@ -8,11 +8,19 @@ use App\Models\Customer;
 use App\Models\Warehouse;
 use App\Models\Product;
 use App\Models\Stock;
+use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class POSController extends Controller
 {
+    protected $imageService;
+
+    public function __construct(ImageService $imageService)
+    {
+        $this->imageService = $imageService;
+    }
+
     public function index()
     {
         // Récupérer les entrepôts de type point de vente
@@ -49,7 +57,12 @@ class POSController extends Controller
                 'category'
             ])
             ->where('is_active', true)
-            ->get();
+            ->get()
+            ->map(function($product) {
+                // Add image URL to product
+                $product->featured_image_url = $this->imageService->getImageUrl($product->featured_image, 'medium');
+                return $product;
+            });
 
         $customers = Customer::where('is_active', true)->get();
 
@@ -82,7 +95,12 @@ class POSController extends Controller
             });
         }
 
-        $products = $query->get();
+        $products = $query->get()
+            ->map(function($product) {
+                // Add image URL to product
+                $product->featured_image_url = $this->imageService->getImageUrl($product->featured_image, 'medium');
+                return $product;
+            });
 
         return response()->json([
             'success' => true,
@@ -119,6 +137,9 @@ class POSController extends Controller
                 'message' => 'Produit introuvable ou stock insuffisant'
             ], 404);
         }
+
+        // Add image URL
+        $product->featured_image_url = $this->imageService->getImageUrl($product->featured_image, 'medium');
 
         return response()->json([
             'success' => true,

@@ -39,7 +39,7 @@
                         <h6>Gestion des Entrepôts</h6>
                         <div class="ms-auto">
                             @can('warehouse-create')
-                                <button type="button" class="btn bg-gradient-primary btn-sm mb-0" data-bs-toggle="modal"
+                                <button type="button" class="btn bg-gradient-primary btn-sm mb-2" data-bs-toggle="modal"
                                     data-bs-target="#warehouseModal" id="createBtn">
                                     <i class="fas fa-plus"></i>&nbsp;&nbsp;Nouvel Entrepôt
                                 </button>
@@ -48,7 +48,7 @@
                     </div>
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
-                    <div class="table-responsive p-0">
+                    <div class="table-responsive px-2">
                         <table class="table align-items-center mb-0" id="warehousesTable">
                             <thead>
                                 <tr>

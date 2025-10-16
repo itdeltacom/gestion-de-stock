@@ -40,13 +40,13 @@ class CategoryController extends Controller
                     $btn = '';
 
                     if (auth()->user()->can('category-edit')) {
-                        $btn .= '<a href="' . route('categories.edit', $row->id) . '" class="text-secondary font-weight-bold text-xs me-2 edit-btn" data-id="' . $row->id . '" data-toggle="tooltip" data-original-title="Edit category">
+                        $btn .= '<a href="' . route('categories.edit', $row->id) . '" class=" font-weight-bold text-xs me-2 edit-btn btn btn-xs btn-dark" data-id="' . $row->id . '" data-toggle="tooltip" data-original-title="Edit category">
                                     <i class="fas fa-edit"></i>
                                 </a>';
                     }
 
                     if (auth()->user()->can('category-delete')) {
-                        $btn .= '<a href="javascript:;" class="text-secondary font-weight-bold text-xs delete-btn" data-id="' . $row->id . '" data-toggle="tooltip" data-original-title="Delete category">
+                        $btn .= '<a href="javascript:;" class=" font-weight-bold text-xs delete-btn btn btn-xs btn-danger" data-id="' . $row->id . '" data-toggle="tooltip" data-original-title="Delete category">
                                     <i class="fas fa-trash"></i>
                                 </a>';
                     }

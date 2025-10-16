@@ -37,19 +37,19 @@ class WarehouseController extends Controller
                     $btn = '';
 
                     if (auth()->user()->can('warehouse-view')) {
-                        $btn .= '<a href="' . route('warehouses.show', $row->id) . '" class="text-secondary font-weight-bold text-xs me-2 view-btn" data-toggle="tooltip" data-original-title="View warehouse">
+                        $btn .= '<a href="' . route('warehouses.show', $row->id) . '" class="btn btn-sm btn-info font-weight-bold text-xs me-2 view-btn" data-toggle="tooltip" data-original-title="View warehouse">
                                     <i class="fas fa-eye"></i>
                                 </a>';
                     }
 
                     if (auth()->user()->can('warehouse-edit')) {
-                        $btn .= '<a href="' . route('warehouses.edit', $row->id) . '" class="text-secondary font-weight-bold text-xs me-2 edit-btn" data-id="' . $row->id . '" data-toggle="tooltip" data-original-title="Edit warehouse">
+                        $btn .= '<a href="' . route('warehouses.edit', $row->id) . '" class="btn btn-sm btn-primary font-weight-bold text-xs me-2 edit-btn" data-id="' . $row->id . '" data-toggle="tooltip" data-original-title="Edit warehouse">
                                     <i class="fas fa-edit"></i>
                                 </a>';
                     }
 
                     if (auth()->user()->can('warehouse-delete')) {
-                        $btn .= '<a href="javascript:;" class="text-secondary font-weight-bold text-xs delete-btn" data-id="' . $row->id . '" data-toggle="tooltip" data-original-title="Delete warehouse">
+                        $btn .= '<a href="javascript:;" class="btn btn-sm btn-danger font-weight-bold text-xs delete-btn" data-id="' . $row->id . '" data-toggle="tooltip" data-original-title="Delete warehouse">
                                     <i class="fas fa-trash"></i>
                                 </a>';
                     }

@@ -128,6 +128,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/products', [ProductController::class, 'index'])
             ->name('products.index');
 
+        Route::delete('products/{product}/featured-image', [ProductController::class, 'deleteFeaturedImage'])->name('products.delete-featured-image');
+        Route::delete('products/gallery/{image}', [ProductController::class, 'deleteGalleryImage'])->name('products.delete-gallery-image');
+        Route::post('products/{product}/reorder-images', [ProductController::class, 'reorderGalleryImages'])->name('products.reorder-images');
         Route::get('/products/data', [ProductController::class, 'getData'])
             ->name('products.data');
 
@@ -149,6 +152,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/products/{product}/regenerate-barcode', [ProductController::class, 'regenerateBarcode'])
             ->name('products.regenerate-barcode');
     });
+    Route::get('/products/{product}/print-barcode', [ProductController::class, 'printBarcode'])
+        ->name('products.print-barcode');
 
     Route::delete('/products/{product}', [ProductController::class, 'destroy'])
         ->name('products.destroy')
@@ -351,6 +356,13 @@ Route::middleware(['auth'])->group(function () {
 
     // Stock Transfers
     Route::middleware(['permission:transfer-view'])->group(function () {
+        Route::middleware(['permission:transfer-create'])->group(function () {
+            Route::get('/stock-transfers/create', [StockTransferController::class, 'create'])
+                ->name('stock-transfers.create');
+
+            Route::post('/stock-transfers', [StockTransferController::class, 'store'])
+                ->name('stock-transfers.store');
+        });
         Route::get('/stock-transfers', [StockTransferController::class, 'index'])
             ->name('stock-transfers.index');
 
@@ -361,13 +373,6 @@ Route::middleware(['auth'])->group(function () {
             ->name('stock-transfers.show');
     });
 
-    Route::middleware(['permission:transfer-create'])->group(function () {
-        Route::get('/stock-transfers/create', [StockTransferController::class, 'create'])
-            ->name('stock-transfers.create');
-
-        Route::post('/stock-transfers', [StockTransferController::class, 'store'])
-            ->name('stock-transfers.store');
-    });
 
     Route::middleware(['permission:transfer-edit'])->group(function () {
         Route::get('/stock-transfers/{stockTransfer}/edit', [StockTransferController::class, 'edit'])
@@ -449,6 +454,30 @@ Route::middleware(['auth'])->group(function () {
         // Rapport de profit
         Route::get('/reports/profit', [ReportController::class, 'profitReport'])
             ->name('reports.profit');
+
+        // Rapport financier
+        Route::get('/reports/financial', [ReportController::class, 'financialReport'])
+            ->name('reports.financial');
+
+        // Rapport des clients
+        Route::get('/reports/customers', [ReportController::class, 'customersReport'])
+            ->name('reports.customers');
+
+        // Rapport des fournisseurs
+        Route::get('/reports/suppliers', [ReportController::class, 'suppliersReport'])
+            ->name('reports.suppliers');
+
+        // Rapport des entrepôts
+        Route::get('/reports/warehouses', [ReportController::class, 'warehousesReport'])
+            ->name('reports.warehouses');
+
+        // Rapport des produits
+        Route::get('/reports/products', [ReportController::class, 'productsReport'])
+            ->name('reports.products');
+
+        // Export des rapports
+        Route::post('/reports/sales/export', [ReportController::class, 'exportSalesReport'])
+            ->name('reports.sales.export');
     });
 });
 

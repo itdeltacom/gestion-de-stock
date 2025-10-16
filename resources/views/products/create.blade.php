@@ -4,8 +4,7 @@
 @push('css')
     <!-- Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
-        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
     <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <style>
@@ -61,6 +60,85 @@
             border-left: 3px solid #ffc107;
             margin-top: 10px;
         }
+
+        /* Image Upload Styles */
+        .image-upload-wrapper {
+            position: relative;
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            background: #f8f9fa;
+        }
+
+        .image-upload-wrapper:hover {
+            border-color: #5e72e4;
+            background: #f0f3ff;
+        }
+
+        .image-upload-wrapper.has-image {
+            border-style: solid;
+            border-color: #2dce89;
+            padding: 10px;
+        }
+
+        .image-preview {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .gallery-upload-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .gallery-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #dee2e6;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .gallery-item .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .gallery-item:hover .remove-btn {
+            opacity: 1;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            color: #adb5bd;
+            margin-bottom: 10px;
+        }
     </style>
 @endpush
 
@@ -71,7 +149,7 @@
                 <div class="card-header pb-0">
                     <div class="d-flex align-items-center">
                         <div>
-                            <h6 class="mb-0">
+                            <h6 class="mb-0 text-white">
                                 <i class="fas fa-plus-circle me-2"></i>Créer un Nouveau Produit
                             </h6>
                             <p class="text-sm text-secondary mb-0">
@@ -86,13 +164,65 @@
                     </div>
                 </div>
                 <div class="card-body pt-4">
-                    <form id="productForm">
+                    <form id="productForm" enctype="multipart/form-data">
                         @csrf
 
-                        <!-- Section 1: Informations de Base -->
+                        <!-- Section 1: Images -->
                         <div class="form-section">
                             <div class="section-header">
-                                <h6 class="mb-0">
+                                <h6 class="mb-0 text-white">
+                                    <i class="fas fa-images me-2"></i>Images du Produit
+                                </h6>
+                            </div>
+
+                            <div class="row">
+                                <!-- Featured Image -->
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">
+                                        Image à la Une
+                                        <i class="fas fa-question-circle text-secondary" data-bs-toggle="tooltip" 
+                                           title="Image principale du produit (recommandé: 1200x1200px)"></i>
+                                    </label>
+                                    <div class="image-upload-wrapper" id="featuredImageWrapper">
+                                        <input type="file" class="d-none" id="featured_image" name="featured_image" accept="image/*">
+                                        <div class="upload-content">
+                                            <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                                            <p class="mb-0 text-sm">Cliquez pour télécharger</p>
+                                            <small class="text-muted">JPG, PNG, GIF, WEBP (Max: 5MB)</small>
+                                        </div>
+                                        <div class="preview-content d-none">
+                                            <img src="" alt="Preview" class="image-preview">
+                                            <button type="button" class="btn btn-sm btn-danger" id="removeFeaturedImage">
+                                                <i class="fas fa-trash"></i> Supprimer
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Gallery Images -->
+                                <div class="col-md-8 mb-3">
+                                    <label class="form-label">
+                                        Galerie d'Images
+                                        <i class="fas fa-question-circle text-secondary" data-bs-toggle="tooltip" 
+                                           title="Ajoutez plusieurs images pour la galerie (recommandé: 1600x1600px)"></i>
+                                    </label>
+                                    <div class="image-upload-wrapper" id="galleryImageWrapper">
+                                        <input type="file" class="d-none" id="gallery_images" name="gallery_images[]" accept="image/*" multiple>
+                                        <div class="upload-content">
+                                            <i class="fas fa-images upload-icon"></i>
+                                            <p class="mb-0 text-sm">Cliquez pour ajouter des images</p>
+                                            <small class="text-muted">Vous pouvez sélectionner plusieurs images</small>
+                                        </div>
+                                    </div>
+                                    <div class="gallery-upload-wrapper" id="galleryPreview"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section 2: Informations de Base -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <h6 class="mb-0 text-white">
                                     <i class="fas fa-info-circle me-2"></i>Informations de Base
                                 </h6>
                             </div>
@@ -125,16 +255,15 @@
                                     <textarea class="form-control" id="description" name="description" rows="3"
                                         placeholder="Décrivez le produit (caractéristiques, spécifications, etc.)"></textarea>
                                     <div class="invalid-feedback" id="description_error"></div>
-                                    <small class="text-muted">Optionnel - Ajoutez des détails pour mieux identifier le
-                                        produit</small>
+                                    <small class="text-muted">Optionnel - Ajoutez des détails pour mieux identifier le produit</small>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Section 2: Codes & Références -->
+                        <!-- Section 3: Codes & Références -->
                         <div class="form-section">
                             <div class="section-header">
-                                <h6 class="mb-0">
+                                <h6 class="mb-0 text-white">
                                     <i class="fas fa-barcode me-2"></i>Codes & Références
                                 </h6>
                             </div>
@@ -186,10 +315,10 @@
                             </div>
                         </div>
 
-                        <!-- Section 3: Tarification -->
+                        <!-- Section 4: Tarification -->
                         <div class="form-section">
                             <div class="section-header">
-                                <h6 class="mb-0">
+                                <h6 class="mb-0 text-white">
                                     <i class="fas fa-tag me-2"></i>Informations Tarifaires
                                 </h6>
                             </div>
@@ -232,7 +361,6 @@
                                     </div>
                                     <small class="text-muted">Calculé automatiquement</small>
                                 </div>
-
                                 <div class="col-md-12">
                                     <div class="price-display">
                                         <div class="row align-items-center">
@@ -254,10 +382,10 @@
                             </div>
                         </div>
 
-                        <!-- Section 4: Gestion du Stock -->
+                        <!-- Section 5: Gestion du Stock -->
                         <div class="form-section">
                             <div class="section-header">
-                                <h6 class="mb-0">
+                                <h6 class="mb-0 text-white">
                                     <i class="fas fa-boxes me-2"></i>Gestion du Stock
                                 </h6>
                             </div>
@@ -302,10 +430,10 @@
                             </div>
                         </div>
 
-                        <!-- Section 5: Statut -->
+                        <!-- Section 6: Statut -->
                         <div class="form-section">
                             <div class="section-header">
-                                <h6 class="mb-0">
+                                <h6 class="mb-0 text-white">
                                     <i class="fas fa-toggle-on me-2"></i>Statut du Produit
                                 </h6>
                             </div>
@@ -355,7 +483,6 @@
         </div>
     </div>
 @endsection
-
 @push('js')
     <!-- Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -375,6 +502,152 @@
                 theme: 'bootstrap-5',
                 placeholder: '-- Sélectionner une catégorie --',
                 width: '100%'
+            });
+
+            // Featured Image Upload
+            let featuredImageFile = null;
+            
+            $('#featuredImageWrapper').on('click', function(e) {
+                // Only trigger file input if not clicking on button or preview
+                if (!$(e.target).closest('.preview-content').length && 
+                    !$(e.target).closest('button').length) {
+                    e.stopPropagation();
+                    $('#featured_image')[0].click();
+                }
+            });
+
+            $('#featured_image').on('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    // Validate file type
+                    const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
+                    if (!validTypes.includes(file.type)) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Type de fichier invalide',
+                            text: 'Veuillez sélectionner une image (JPG, PNG, GIF, WEBP)',
+                            confirmButtonColor: '#d33'
+                        });
+                        $(this).val('');
+                        return;
+                    }
+
+                    // Validate file size (5MB)
+                    if (file.size > 5 * 1024 * 1024) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Fichier trop volumineux',
+                            text: 'La taille maximale est de 5MB',
+                            confirmButtonColor: '#d33'
+                        });
+                        $(this).val('');
+                        return;
+                    }
+
+                    featuredImageFile = file;
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        $('#featuredImageWrapper').addClass('has-image');
+                        $('#featuredImageWrapper .upload-content').addClass('d-none');
+                        $('#featuredImageWrapper .preview-content').removeClass('d-none');
+                        $('#featuredImageWrapper .image-preview').attr('src', e.target.result);
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            $('#removeFeaturedImage').on('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                
+                featuredImageFile = null;
+                $('#featured_image').val('');
+                $('#featuredImageWrapper').removeClass('has-image');
+                $('#featuredImageWrapper .upload-content').removeClass('d-none');
+                $('#featuredImageWrapper .preview-content').addClass('d-none');
+            });
+
+            // Gallery Images Upload
+            let galleryFiles = [];
+
+            $('#galleryImageWrapper').on('click', function(e) {
+                e.stopPropagation();
+                $('#gallery_images')[0].click();
+            });
+
+            $('#gallery_images').on('change', function(e) {
+                const files = Array.from(e.target.files);
+                let validFiles = 0;
+
+                files.forEach(file => {
+                    // Validate file type
+                    const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
+                    if (!validTypes.includes(file.type)) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Fichier ignoré',
+                            text: `${file.name} n'est pas une image valide`,
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                        return;
+                    }
+
+                    // Validate file size (5MB)
+                    if (file.size > 5 * 1024 * 1024) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Fichier ignoré',
+                            text: `${file.name} est trop volumineux (max 5MB)`,
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                        return;
+                    }
+
+                    validFiles++;
+                    galleryFiles.push(file);
+                    const fileIndex = galleryFiles.length - 1;
+                    
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const galleryItem = $(`
+                            <div class="gallery-item" data-index="${fileIndex}">
+                                <img src="${e.target.result}" alt="Gallery Image">
+                                <button type="button" class="remove-btn">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        `);
+                        
+                        // Add click handler to remove button
+                        galleryItem.find('.remove-btn').on('click', function(e) {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            const index = galleryItem.data('index');
+                            galleryFiles[index] = null;
+                            galleryItem.fadeOut(300, function() {
+                                $(this).remove();
+                            });
+                        });
+                        
+                        $('#galleryPreview').append(galleryItem);
+                    }
+                    reader.readAsDataURL(file);
+                });
+
+                // Reset input
+                $(this).val('');
+
+                if (validFiles > 0) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Images ajoutées',
+                        text: `${validFiles} image(s) ajoutée(s)`,
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                }
             });
 
             // Calculate and display price TTC
@@ -397,11 +670,9 @@
                 const reference = $(this).val().trim();
 
                 if (reference) {
-                    // Generate EAN-13 barcode
                     const numericRef = reference.replace(/[^0-9]/g, '').padStart(9, '0').substring(0, 9);
                     const barcodeBase = '200' + numericRef;
 
-                    // Calculate check digit
                     let sum = 0;
                     for (let i = 0; i < 12; i++) {
                         sum += parseInt(barcodeBase[i]) * ((i % 2 === 0) ? 1 : 3);
@@ -413,7 +684,6 @@
                     $('#barcode_preview_number').text(fullBarcode);
                     $('#barcode_preview_container').slideDown();
 
-                    // Simple barcode visualization (bars)
                     generateBarcodeVisual(fullBarcode);
                 } else {
                     $('#barcode_display').val('');
@@ -421,12 +691,10 @@
                 }
             });
 
-            // Generate simple barcode visual
             function generateBarcodeVisual(barcode) {
                 const svg = document.getElementById('barcode_svg');
                 svg.innerHTML = '';
 
-                // Simple alternating bars representation
                 let x = 0;
                 for (let i = 0; i < barcode.length; i++) {
                     const digit = parseInt(barcode[i]);
@@ -438,7 +706,7 @@
                     rect.setAttribute('y', 10);
                     rect.setAttribute('width', width);
                     rect.setAttribute('height', height);
-                    rect.setAttribute('fill', i % 2 === 0 ? '#000' : '#000');
+                    rect.setAttribute('fill', '#000');
                     rect.setAttribute('opacity', digit / 10);
 
                     svg.appendChild(rect);
@@ -447,32 +715,32 @@
             }
 
             // Stock method info
-            $('#stock_method').change(function () {
+            $('#stock_method').on('change', function () {
                 const method = $(this).val();
 
                 if (method === 'cmup') {
                     $('#stock_method_description').html(`
-                            <div>
-                                <strong>CMUP (Coût Moyen Unitaire Pondéré)</strong>
-                                <p class="text-xs mb-0 mt-1">
-                                    Le coût du stock est calculé en faisant la moyenne pondérée de tous les achats. 
-                                    À chaque nouvel achat, le coût moyen est recalculé automatiquement.
-                                    <br><strong>Idéal pour:</strong> Produits homogènes, gestion simplifiée, petites variations de prix.
-                                </p>
-                            </div>
-                        `);
+                        <div>
+                            <strong>CMUP (Coût Moyen Unitaire Pondéré)</strong>
+                            <p class="text-xs mb-0 mt-1">
+                                Le coût du stock est calculé en faisant la moyenne pondérée de tous les achats. 
+                                À chaque nouvel achat, le coût moyen est recalculé automatiquement.
+                                <br><strong>Idéal pour:</strong> Produits homogènes, gestion simplifiée, petites variations de prix.
+                            </p>
+                        </div>
+                    `);
                     $('#stock_method_info').slideDown();
                 } else if (method === 'fifo') {
                     $('#stock_method_description').html(`
-                            <div>
-                                <strong>FIFO (First In First Out - Premier Entré Premier Sorti)</strong>
-                                <p class="text-xs mb-0 mt-1">
-                                    Les produits sont sortis du stock dans l'ordre chronologique d'entrée. 
-                                    Le premier lot acheté est le premier vendu.
-                                    <br><strong>Idéal pour:</strong> Produits périssables, traçabilité stricte, grandes variations de prix.
-                                </p>
-                            </div>
-                        `);
+                        <div>
+                            <strong>FIFO (First In First Out - Premier Entré Premier Sorti)</strong>
+                            <p class="text-xs mb-0 mt-1">
+                                Les produits sont sortis du stock dans l'ordre chronologique d'entrée. 
+                                Le premier lot acheté est le premier vendu.
+                                <br><strong>Idéal pour:</strong> Produits périssables, traçabilité stricte, grandes variations de prix.
+                            </p>
+                        </div>
+                    `);
                     $('#stock_method_info').slideDown();
                 } else {
                     $('#stock_method_info').slideUp();
@@ -480,10 +748,9 @@
             });
 
             // Form Submit
-            $('#productForm').submit(function (e) {
+            $('#productForm').on('submit', function (e) {
                 e.preventDefault();
 
-                // Validate required fields
                 if (!$('#name').val() || !$('#category_id').val() || !$('#stock_method').val()) {
                     Swal.fire({
                         icon: 'warning',
@@ -499,24 +766,37 @@
                 $('.form-control, .form-select').removeClass('is-invalid');
                 $('.invalid-feedback').text('');
 
-                const formData = {
-                    _token: $('input[name="_token"]').val(),
-                    name: $('#name').val(),
-                    code: $('#code').val(),
-                    reference: $('#reference').val(),
-                    description: $('#description').val(),
-                    category_id: $('#category_id').val(),
-                    tva_rate: $('#tva_rate').val(),
-                    price: $('#price').val(),
-                    stock_method: $('#stock_method').val(),
-                    alert_stock: $('#alert_stock').val(),
-                    is_active: $('#is_active').is(':checked') ? 1 : 0
-                };
+                const formData = new FormData();
+                formData.append('_token', $('input[name="_token"]').val());
+                formData.append('name', $('#name').val());
+                formData.append('code', $('#code').val());
+                formData.append('reference', $('#reference').val());
+                formData.append('description', $('#description').val());
+                formData.append('category_id', $('#category_id').val());
+                formData.append('tva_rate', $('#tva_rate').val());
+                formData.append('price', $('#price').val());
+                formData.append('stock_method', $('#stock_method').val());
+                formData.append('alert_stock', $('#alert_stock').val());
+                formData.append('is_active', $('#is_active').is(':checked') ? 1 : 0);
+
+                // Add featured image
+                if (featuredImageFile) {
+                    formData.append('featured_image', featuredImageFile);
+                }
+
+                // Add gallery images
+                galleryFiles.forEach((file, index) => {
+                    if (file !== null) {
+                        formData.append('gallery_images[]', file);
+                    }
+                });
 
                 $.ajax({
                     url: "{{ route('products.store') }}",
                     type: 'POST',
                     data: formData,
+                    processData: false,
+                    contentType: false,
                     success: function (response) {
                         if (response.success) {
                             Swal.fire({

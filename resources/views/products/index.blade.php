@@ -7,7 +7,6 @@
     <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <style>
-        /* Custom DataTables Pagination with Chevrons */
         .dataTables_wrapper .dataTables_paginate .paginate_button.previous:before {
             content: "‹";
             font-size: 20px;
@@ -30,6 +29,16 @@
 
         .low-stock-row {
             background-color: #fff5f5 !important;
+        }
+
+        .product-thumb {
+            position: relative;
+            transition: transform 0.3s;
+        }
+
+        .product-thumb:hover {
+            transform: scale(1.1);
+            z-index: 10;
         }
     </style>
 @endpush
@@ -101,30 +110,24 @@
                             <thead>
                                 <tr>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">#</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Code
-                                    </th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Image</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Code</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
                                         Référence</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
                                         Code-Barres</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nom
-                                    </th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nom</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
                                         Catégorie</th>
-                                    <th
-                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                         Prix HT</th>
-                                    <th
-                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                         TVA</th>
-                                    <th
-                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                         Stock</th>
-                                    <th
-                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                         Méthode</th>
-                                    <th
-                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                         Statut</th>
                                     <th class="text-secondary opacity-7"></th>
                                 </tr>
@@ -163,6 +166,7 @@
                 },
                 columns: [
                     { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                    { data: 'image_thumb', name: 'image_thumb', orderable: false, searchable: false },
                     { data: 'code', name: 'code' },
                     { data: 'reference', name: 'reference' },
                     { data: 'barcode_display', name: 'barcode' },
@@ -185,7 +189,6 @@
                     { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
                 ],
                 rowCallback: function (row, data) {
-                    // Add class to low stock rows
                     if (data.is_low_stock) {
                         $(row).addClass('low-stock-row');
                     }
@@ -207,7 +210,7 @@
                         last: "Dernier"
                     }
                 },
-                order: [[1, 'desc']]
+                order: [[2, 'desc']]
             });
 
             // Filter change events

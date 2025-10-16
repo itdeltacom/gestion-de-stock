@@ -27,6 +27,9 @@
         .dataTables_wrapper .dataTables_paginate .paginate_button.next:before {
             font-size: 20px;
         }
+        .table td .progress{
+            height : 16px !important
+        }
     </style>
 @endpush
 
