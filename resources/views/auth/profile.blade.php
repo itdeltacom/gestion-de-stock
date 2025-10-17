@@ -173,7 +173,7 @@
                                     <label for="current_password" class="form-control-label">Mot de Passe Actuel</label>
                                     <div class="input-group">
                                         <input class="form-control" type="password" id="current_password" name="current_password" required>
-                                        <button class="btn btn-outline-secondary" type="button" id="toggleCurrentPassword">
+                                        <button class="btn mb-0 btn-secondary" type="button" id="toggleCurrentPassword">
                                             <i class="fa-solid fa-eye" id="currentPasswordIcon"></i>
                                         </button>
                                     </div>
@@ -185,7 +185,7 @@
                                     <label for="new_password" class="form-control-label">Nouveau Mot de Passe</label>
                                     <div class="input-group">
                                         <input class="form-control" type="password" id="new_password" name="new_password" required>
-                                        <button class="btn btn-outline-secondary" type="button" id="toggleNewPassword">
+                                        <button class="btn mb-0 btn-secondary" type="button" id="toggleNewPassword">
                                             <i class="fa-solid fa-eye" id="newPasswordIcon"></i>
                                         </button>
                                     </div>
@@ -206,7 +206,7 @@
                                     <label for="new_password_confirmation" class="form-control-label">Confirmer le Mot de Passe</label>
                                     <div class="input-group">
                                         <input class="form-control" type="password" id="new_password_confirmation" name="new_password_confirmation" required>
-                                        <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword">
+                                        <button class="btn mb-0 btn-secondary" type="button" id="toggleConfirmPassword">
                                             <i class="fa-solid fa-eye" id="confirmPasswordIcon"></i>
                                         </button>
                                     </div>
