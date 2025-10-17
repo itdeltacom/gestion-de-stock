@@ -91,282 +91,298 @@
             height: 80px;
             object-fit: cover;
             margin-bottom: 0.5rem;
-                border-radius: 8px;
-                border: 1px solid #e9ecef;
-                background: #f8f9fa;
+            border-radius: 8px;
+            /* border: 1px solid #e9ecef; */
+            background: #f8f9fa;
+        }
+
+        .product-name {
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            height: 2.5em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .product-price {
+            color: #28a745;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .product-stock {
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Cart Section */
+        .cart-section {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            height: calc(100vh - 180px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-header {
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+        }
+
+        .cart-item {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+            background: #f8f9fa;
+        }
+
+        .cart-item-name {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .qty-btn {
+            width: 30px;
+            height: 30px;
+            padding: 0;
+            border-radius: 5px;
+        }
+
+        .qty-input {
+            width: 60px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 0.25rem;
+        }
+
+        .cart-totals {
+            border-top: 2px solid #e9ecef;
+            padding-top: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .total-row.grand-total {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #0d6efd;
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 2px solid #0d6efd;
+        }
+
+        .cart-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .btn-pay {
+            grid-column: 1 / -1;
+            font-size: 1.2rem;
+            padding: 1rem;
+        }
+
+        /* Empty Cart */
+        .empty-cart {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #adb5bd;
+        }
+
+        .empty-cart i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Category Pills */
+        .category-pills {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .category-pill {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            border: 2px solid #e9ecef;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .category-pill:hover,
+        .category-pill.active {
+            background: #0d6efd;
+            color: white;
+            border-color: #0d6efd;
+        }
+
+        /* Barcode Scanner Enhanced */
+        .barcode-scanner {
+            position: relative;
+        }
+
+        .barcode-scanner input {
+            font-size: 1.1rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            padding-left: 40px;
+        }
+
+        .barcode-scanner input:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+        .barcode-scanner input::placeholder {
+            font-weight: normal;
+        }
+
+        .barcode-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .scanner-ready-indicator {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #28a745;
+            animation: pulse 2s ease-in-out infinite;
+            z-index: 5;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: translateY(-50%) scale(1);
             }
 
-            .product-name {
-                font-weight: bold;
-                font-size: 0.9rem;
-                margin-bottom: 0.5rem;
-                height: 2.5em;
-                overflow: hidden;
-                text-overflow: ellipsis;
+            50% {
+                opacity: 0.5;
+                transform: translateY(-50%) scale(1.2);
+            }
+        }
+
+        /* Scan Success Animation */
+        @keyframes scanSuccess {
+            0% {
+                background-color: #d4edda;
+                border-color: #28a745;
             }
 
-            .product-price {
-                color: #28a745;
-                font-size: 1.1rem;
-                font-weight: bold;
+            100% {
+                background-color: white;
+                border-color: #dee2e6;
+            }
+        }
+
+        /* Scan Error Animation */
+        @keyframes scanError {
+
+            0%,
+            100% {
+                transform: translateX(0);
             }
 
-            .product-stock {
-                font-size: 0.8rem;
-                margin-top: 0.5rem;
+            10%,
+            30%,
+            50%,
+            70%,
+            90% {
+                transform: translateX(-5px);
             }
 
-            /* Cart Section */
-            .cart-section {
-                background: white;
-                border-radius: 10px;
-                padding: 1.5rem;
-                height: calc(100vh - 180px);
-                display: flex;
-                flex-direction: column;
+            20%,
+            40%,
+            60%,
+            80% {
+                transform: translateX(5px);
+            }
+        }
+
+        .scan-animation-success {
+            animation: scanSuccess 0.5s ease-out;
+        }
+
+        .scan-animation-error {
+            animation: scanError 0.5s ease-out;
+        }
+
+        /* Scan Notification */
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
             }
 
-            .cart-header {
-                border-bottom: 2px solid #e9ecef;
-                padding-bottom: 1rem;
-                margin-bottom: 1rem;
+            to {
+                transform: translateX(0);
+                opacity: 1;
             }
+        }
 
-            .cart-items {
-                flex: 1;
-                overflow-y: auto;
-                margin-bottom: 1rem;
-            }
+        .scan-notification {
+            animation: slideInRight 0.3s ease-out;
+        }
 
-            .cart-item {
-                border: 1px solid #e9ecef;
-                border-radius: 8px;
-                padding: 0.75rem;
-                margin-bottom: 0.75rem;
-                background: #f8f9fa;
-            }
+        .qty-controls .btn {
+            margin-bottom: 0 !important;
+        }
 
-            .cart-item-name {
-                font-weight: bold;
-                margin-bottom: 0.5rem;
-            }
+        /* Scanner Status Badge */
+        .scanner-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
 
-            .qty-controls {
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-            }
-
-            .qty-btn {
-                width: 30px;
-                height: 30px;
-                padding: 0;
-                border-radius: 5px;
-            }
-
-            .qty-input {
-                width: 60px;
-                text-align: center;
-                border: 1px solid #dee2e6;
-                border-radius: 5px;
-                padding: 0.25rem;
-            }
-
-            .cart-totals {
-                border-top: 2px solid #e9ecef;
-                padding-top: 1rem;
-                margin-bottom: 1rem;
-            }
-
-            .total-row {
-                display: flex;
-                justify-content: space-between;
-                margin-bottom: 0.5rem;
-                font-size: 1rem;
-            }
-
-            .total-row.grand-total {
-                font-size: 1.5rem;
-                font-weight: bold;
-                color: #0d6efd;
-                margin-top: 0.5rem;
-                padding-top: 0.5rem;
-                border-top: 2px solid #0d6efd;
-            }
-
-            .cart-actions {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 0.5rem;
-            }
-
-            .btn-pay {
-                grid-column: 1 / -1;
-                font-size: 1.2rem;
-                padding: 1rem;
-            }
-
-            /* Empty Cart */
-            .empty-cart {
-                text-align: center;
-                padding: 3rem 1rem;
-                color: #adb5bd;
-            }
-
-            .empty-cart i {
-                font-size: 4rem;
-                margin-bottom: 1rem;
-            }
-
-            /* Category Pills */
-            .category-pills {
-                display: flex;
-                gap: 0.5rem;
-                flex-wrap: wrap;
-                margin-bottom: 1rem;
-            }
-
-            .category-pill {
-                padding: 0.5rem 1rem;
-                border-radius: 20px;
-                border: 2px solid #e9ecef;
-                background: white;
-                cursor: pointer;
-                transition: all 0.3s;
-            }
-
-            .category-pill:hover,
-            .category-pill.active {
-                background: #0d6efd;
-                color: white;
-                border-color: #0d6efd;
-            }
-
-            /* Barcode Scanner Enhanced */
-            .barcode-scanner {
-                position: relative;
-            }
-
-            .barcode-scanner input {
-                font-size: 1.1rem;
-                font-weight: 500;
-                transition: all 0.2s;
-                padding-left: 40px;
-            }
-
-            .barcode-scanner input:focus {
-                border-color: #0d6efd;
-                box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-            }
-
-            .barcode-scanner input::placeholder {
-                font-weight: normal;
-            }
-
-            .barcode-icon {
-                position: absolute;
-                right: 15px;
-                top: 50%;
-                transform: translateY(-50%);
-                color: #6c757d;
-                pointer-events: none;
-                z-index: 5;
-            }
-
-            .scanner-ready-indicator {
-                position: absolute;
-                left: 15px;
-                top: 50%;
-                transform: translateY(-50%);
-                width: 10px;
-                height: 10px;
-                border-radius: 50%;
-                background-color: #28a745;
-                animation: pulse 2s ease-in-out infinite;
-                z-index: 5;
-            }
-
-            @keyframes pulse {
-                0%, 100% {
-                    opacity: 1;
-                    transform: translateY(-50%) scale(1);
-                }
-                50% {
-                    opacity: 0.5;
-                    transform: translateY(-50%) scale(1.2);
-                }
-            }
-
-            /* Scan Success Animation */
-            @keyframes scanSuccess {
-                0% {
-                    background-color: #d4edda;
-                    border-color: #28a745;
-                }
-                100% {
-                    background-color: white;
-                    border-color: #dee2e6;
-                }
-            }
-
-            /* Scan Error Animation */
-            @keyframes scanError {
-                0%, 100% {
-                    transform: translateX(0);
-                }
-                10%, 30%, 50%, 70%, 90% {
-                    transform: translateX(-5px);
-                }
-                20%, 40%, 60%, 80% {
-                    transform: translateX(5px);
-                }
-            }
-
-            .scan-animation-success {
-                animation: scanSuccess 0.5s ease-out;
-            }
-
-            .scan-animation-error {
-                animation: scanError 0.5s ease-out;
-            }
-
-            /* Scan Notification */
-            @keyframes slideInRight {
-                from {
-                    transform: translateX(100%);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-            }
-
-            .scan-notification {
-                animation: slideInRight 0.3s ease-out;
-            }
-
-            .qty-controls .btn {
-                margin-bottom: 0 !important;
-            }
-
-            /* Scanner Status Badge */
-            .scanner-status {
-                display: inline-block;
-                padding: 4px 12px;
-                border-radius: 12px;
-                font-size: 0.75rem;
-                font-weight: 600;
-                background: #d4edda;
-                color: #155724;
-                border: 1px solid #c3e6cb;
-            }
-
-            .scanner-status i {
-                margin-right: 5px;
-                animation: pulse 2s ease-in-out infinite;
-            }
-        </style>
+        .scanner-status i {
+            margin-right: 5px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -411,9 +427,8 @@
                                         <div class="barcode-scanner mb-3">
                                             <span class="scanner-ready-indicator"></span>
                                             <input type="text" class="form-control form-control-lg" id="barcodeInput"
-                                                placeholder="Scanner le code-barres ou taper pour rechercher..." 
-                                                autocomplete="off" 
-                                                autofocus>
+                                                placeholder="Scanner le code-barres ou taper pour rechercher..."
+                                                autocomplete="off" autofocus>
                                             <i class="fas fa-barcode barcode-icon fa-2x"></i>
                                         </div>
 
@@ -646,7 +661,7 @@
             const MIN_BARCODE_LENGTH = 3;
 
             // Méthode 1: Détection par événement clavier (scanners hardware)
-            $(document).on('keypress', function(e) {
+            $(document).on('keypress', function (e) {
                 // Ignorer si on est dans un input/textarea/select (sauf barcodeInput)
                 if ($(e.target).is('input, textarea, select') && e.target.id !== 'barcodeInput') {
                     return;
@@ -671,7 +686,7 @@
 
                 // Reset timeout
                 clearTimeout(barcodeTimeout);
-                barcodeTimeout = setTimeout(function() {
+                barcodeTimeout = setTimeout(function () {
                     // Timeout atteint - probablement saisie manuelle
                     if (barcodeBuffer.length >= MIN_BARCODE_LENGTH) {
                         processBarcodeScanned(barcodeBuffer);
@@ -681,7 +696,7 @@
             });
 
             // Méthode 2: Input manuel dans le champ barcode
-            $('#barcodeInput').on('keypress', function(e) {
+            $('#barcodeInput').on('keypress', function (e) {
                 if (e.which === 13 || e.keyCode === 13) {
                     e.preventDefault();
                     const barcode = $(this).val().trim();
@@ -695,7 +710,7 @@
 
             // Méthode 3: Détection automatique après délai (backup)
             let inputTimeout;
-            $('#barcodeInput').on('input', function() {
+            $('#barcodeInput').on('input', function () {
                 clearTimeout(inputTimeout);
                 const barcode = $(this).val().trim();
 
@@ -708,8 +723,8 @@
             });
 
             // Auto-focus sur le champ barcode
-            setInterval(function() {
-                if (!$('#paymentModal').is(':visible') && 
+            setInterval(function () {
+                if (!$('#paymentModal').is(':visible') &&
                     !$('#todaySalesModal').is(':visible') &&
                     !$('input:focus, textarea:focus, select:focus').not('#barcodeInput').length) {
                     $('#barcodeInput').focus();
@@ -793,7 +808,7 @@
                     showScanNotification('error', `${errorMessage}: ${barcode}`);
                     playErrorBeep();
                 },
-                complete: function() {
+                complete: function () {
                     $('.barcode-icon').html(originalIcon);
                     $('#barcodeInput').val('').focus();
                 }
@@ -804,9 +819,9 @@
             const notification = $('<div>')
                 .addClass('scan-notification')
                 .html(`
-                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
-                    <span>${message}</span>
-                `)
+                        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                        <span>${message}</span>
+                    `)
                 .css({
                     position: 'fixed',
                     top: '80px',
@@ -828,7 +843,7 @@
             $('body').append(notification);
 
             setTimeout(() => {
-                notification.fadeOut(300, function() {
+                notification.fadeOut(300, function () {
                     $(this).remove();
                 });
             }, 2000);
@@ -886,40 +901,40 @@
 
             if (cart.length === 0) {
                 cartItemsDiv.html(`
-                    <div class="empty-cart">
-                        <i class="fas fa-shopping-basket"></i>
-                        <p>Panier vide</p>
-                        <small>Scannez ou sélectionnez des produits</small>
-                    </div>
-                `);
+                        <div class="empty-cart">
+                            <i class="fas fa-shopping-basket"></i>
+                            <p>Panier vide</p>
+                            <small>Scannez ou sélectionnez des produits</small>
+                        </div>
+                    `);
             } else {
                 let html = '';
                 cart.forEach((item, index) => {
                     const subtotal = item.price * item.quantity;
                     html += `
-                        <div class="cart-item">
-                            <div class="cart-item-name">${item.name}</div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="qty-controls">
-                                    <button class="btn btn-sm btn-danger qty-btn" onclick="decreaseQty(${index})">
-                                        <i class="fas fa-minus"></i>
-                                    </button>
-                                    <input type="number" class="qty-input" value="${item.quantity}" 
-                                           onchange="updateQty(${index}, this.value)" min="1" max="${item.stock}">
-                                    <button class="btn btn-sm btn-success qty-btn" onclick="increaseQty(${index})">
-                                        <i class="fas fa-plus"></i>
+                            <div class="cart-item">
+                                <div class="cart-item-name">${item.name}</div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="qty-controls">
+                                        <button class="btn btn-sm btn-danger qty-btn" onclick="decreaseQty(${index})">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                        <input type="number" class="qty-input" value="${item.quantity}" 
+                                               onchange="updateQty(${index}, this.value)" min="1" max="${item.stock}">
+                                        <button class="btn btn-sm btn-success qty-btn" onclick="increaseQty(${index})">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                    <div class="text-end">
+                                        <div>${item.price.toFixed(2)} DH</div>
+                                        <strong>${subtotal.toFixed(2)} DH</strong>
+                                    </div>
+                                    <button class="btn btn-sm btn-danger" onclick="removeFromCart(${index})">
+                                        <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
-                                <div class="text-end">
-                                    <div>${item.price.toFixed(2)} DH</div>
-                                    <strong>${subtotal.toFixed(2)} DH</strong>
-                                </div>
-                                <button class="btn btn-sm btn-danger" onclick="removeFromCart(${index})">
-                                    <i class="fas fa-trash"></i>
-                                </button>
                             </div>
-                        </div>
-                    `;
+                        `;
                 });
                 cartItemsDiv.html(html);
             }
@@ -1093,9 +1108,9 @@
                             icon: 'success',
                             title: 'Vente Enregistrée!',
                             html: `
-                                <p>Montant: <strong>${totals.totalTTC.toFixed(2)} DH</strong></p>
-                                ${response.change > 0 ? `<p>Monnaie: <strong>${response.change.toFixed(2)} DH</strong></p>` : ''}
-                            `,
+                                    <p>Montant: <strong>${totals.totalTTC.toFixed(2)} DH</strong></p>
+                                    ${response.change > 0 ? `<p>Monnaie: <strong>${response.change.toFixed(2)} DH</strong></p>` : ''}
+                                `,
                             showCancelButton: true,
                             confirmButtonText: 'Imprimer Ticket',
                             cancelButtonText: 'Nouvelle Vente'
@@ -1166,37 +1181,37 @@
                 success: function (response) {
                     if (response.success) {
                         let html = `
-                            <div class="row mb-4">
-                                <div class="col-md-6">
-                                    <div class="card bg-success text-white">
-                                        <div class="card-body text-center">
-                                            <h3>${response.data.total_sales.toFixed(2)} DH</h3>
-                                            <p class="mb-0">Total des Ventes</p>
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <div class="card bg-success text-white">
+                                            <div class="card-body text-center">
+                                                <h3>${response.data.total_sales.toFixed(2)} DH</h3>
+                                                <p class="mb-0">Total des Ventes</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card bg-primary text-white">
+                                            <div class="card-body text-center">
+                                                <h3>${response.data.total_transactions}</h3>
+                                                <p class="mb-0">Transactions</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="card bg-primary text-white">
-                                        <div class="card-body text-center">
-                                            <h3>${response.data.total_transactions}</h3>
-                                            <p class="mb-0">Transactions</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Référence</th>
-                                            <th>Client</th>
-                                            <th>Montant</th>
-                                            <th>Statut</th>
-                                            <th>Heure</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                        `;
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Référence</th>
+                                                <th>Client</th>
+                                                <th>Montant</th>
+                                                <th>Statut</th>
+                                                <th>Heure</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                            `;
 
                         response.data.sales.forEach(sale => {
                             const statusBadge = sale.status === 'valide'
@@ -1204,21 +1219,21 @@
                                 : '<span class="badge bg-warning">En attente</span>';
 
                             html += `
-                                <tr>
-                                    <td><strong>${sale.reference}</strong></td>
-                                    <td>${sale.customer.name || 'N/A'}</td>
-                                    <td><strong>${parseFloat(sale.total_ttc).toFixed(2)} DH</strong></td>
-                                    <td>${statusBadge}</td>
-                                    <td>${new Date(sale.created_at).toLocaleTimeString('fr-FR')}</td>
-                                </tr>
-                            `;
+                                    <tr>
+                                        <td><strong>${sale.reference}</strong></td>
+                                        <td>${sale.customer.name || 'N/A'}</td>
+                                        <td><strong>${parseFloat(sale.total_ttc).toFixed(2)} DH</strong></td>
+                                        <td>${statusBadge}</td>
+                                        <td>${new Date(sale.created_at).toLocaleTimeString('fr-FR')}</td>
+                                    </tr>
+                                `;
                         });
 
                         html += `
-                                    </tbody>
-                                </table>
-                            </div>
-                        `;
+                                        </tbody>
+                                    </table>
+                                </div>
+                            `;
 
                         $('#todaySalesContent').html(html);
                     }
