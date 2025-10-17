@@ -12,6 +12,7 @@ use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\WarehouseController;
+use App\Http\Controllers\DeliveryNoteController;
 use App\Http\Controllers\StockTransferController;
 
 Route::get('/', [AuthController::class, 'showLoginForm'])
@@ -134,6 +135,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/products/data', [ProductController::class, 'getData'])
             ->name('products.data');
 
+        Route::get('/products/by-warehouse/{warehouseId}', [ProductController::class, 'getByWarehouse'])
+            ->name('products.by-warehouse');
         Route::get('/products/{product}', [ProductController::class, 'show'])
             ->name('products.show');
 
@@ -159,8 +162,6 @@ Route::middleware(['auth'])->group(function () {
         ->name('products.destroy')
         ->middleware('permission:product-delete');
 
-    Route::get('/products/by-warehouse/{warehouseId}', [ProductController::class, 'getByWarehouse'])
-        ->name('products.by-warehouse');
 
     // Suppliers
     Route::middleware(['permission:supplier-view'])->group(function () {
@@ -353,7 +354,48 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/sales/products-by-warehouse', [SaleController::class, 'getProductsByWarehouse'])
         ->name('sales.products-by-warehouse');
+    // Delivery Notes (Bons de Livraison)
+    Route::middleware(['permission:delivery-note-create'])->group(function () {
+        Route::get('/delivery-notes/create', [DeliveryNoteController::class, 'create'])
+            ->name('delivery-notes.create');
 
+        Route::post('/delivery-notes', [DeliveryNoteController::class, 'store'])
+            ->name('delivery-notes.store');
+
+        Route::get('/delivery-notes/from-sale/{sale}', [DeliveryNoteController::class, 'createFromSale'])
+            ->name('delivery-notes.from-sale');
+    });
+    Route::middleware(['permission:delivery-note-view'])->group(function () {
+        Route::get('/delivery-notes', [DeliveryNoteController::class, 'index'])
+            ->name('delivery-notes.index');
+
+        Route::get('/delivery-notes/data', [DeliveryNoteController::class, 'getData'])
+            ->name('delivery-notes.data');
+
+        Route::get('/delivery-notes/{deliveryNote}', [DeliveryNoteController::class, 'show'])
+            ->name('delivery-notes.show');
+
+        Route::get('/delivery-notes/{deliveryNote}/pdf', [DeliveryNoteController::class, 'generatePdf'])
+            ->name('delivery-notes.pdf');
+
+        Route::get('/delivery-notes/{deliveryNote}/pdf/download', [DeliveryNoteController::class, 'downloadPdf'])
+            ->name('delivery-notes.pdf.download');
+    });
+
+    Route::middleware(['permission:delivery-note-edit'])->group(function () {
+        Route::get('/delivery-notes/{deliveryNote}/edit', [DeliveryNoteController::class, 'edit'])
+            ->name('delivery-notes.edit');
+
+        Route::put('/delivery-notes/{deliveryNote}', [DeliveryNoteController::class, 'update'])
+            ->name('delivery-notes.update');
+
+        Route::post('/delivery-notes/{deliveryNote}/mark-delivered', [DeliveryNoteController::class, 'markAsDelivered'])
+            ->name('delivery-notes.mark-delivered');
+    });
+
+    Route::delete('/delivery-notes/{deliveryNote}', [DeliveryNoteController::class, 'destroy'])
+        ->name('delivery-notes.destroy')
+        ->middleware('permission:delivery-note-delete');
     // Stock Transfers
     Route::middleware(['permission:transfer-view'])->group(function () {
         Route::middleware(['permission:transfer-create'])->group(function () {

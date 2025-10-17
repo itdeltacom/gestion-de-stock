@@ -73,7 +73,21 @@
                                     </button>
                                 @endif
                             @endcan
+@if($sale->status === 'valide' && !$sale->hasDeliveryNote())
+    @can('delivery-note-create')
+        <a href="{{ route('delivery-notes.from-sale', $sale->id) }}" 
+           class="btn btn-success btn-sm">
+            <i class="fas fa-truck"></i> Générer Bon de Livraison
+        </a>
+    @endcan
+@endif
 
+@if($sale->hasDeliveryNote())
+    <a href="{{ route('delivery-notes.show', $sale->deliveryNote->id) }}" 
+       class="btn btn-outline-info btn-sm ">
+        <i class="fas fa-truck"></i> Voir BL: {{ $sale->deliveryNote->reference }}
+    </a>
+@endif
                             <div class="btn-group">
                                 <button type="button" class="btn btn-info btn-sm dropdown-toggle" data-bs-toggle="dropdown">
                                     <i class="fas fa-file-pdf"></i> PDF

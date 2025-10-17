@@ -118,12 +118,25 @@ class Sale extends Model
     {
         return $this->hasMany(Payment::class);
     }
-    // Dans la classe Sale, ajouter cette relation
     public function creditSchedules()
     {
         return $this->hasMany(CreditSchedule::class)->orderBy('installment_number');
     }
+    public function deliveryNote()
+    {
+        return $this->hasOne(DeliveryNote::class);
+    }
 
+
+    public function hasDeliveryNote()
+    {
+        return $this->deliveryNote()->exists();
+    }
+
+    public function canGenerateDeliveryNote()
+    {
+        return $this->status === 'valide' && !$this->hasDeliveryNote();
+    }
     public function createCreditSchedules($numberOfInstallments, $firstDueDate)
     {
         if (!$this->is_credit) {
@@ -185,7 +198,7 @@ class Sale extends Model
         return $payment;
     }
 
-    // Nouvelle méthode pour distribuer les paiements sur les échéances
+    //  méthode pour distribuer les paiements sur les échéances
     private function distributePaymentToSchedules($amount)
     {
         $remainingAmount = $amount;
