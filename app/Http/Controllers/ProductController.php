@@ -112,21 +112,25 @@ class ProductController extends Controller
             // Create product first
             $product = Product::create($validated);
 
-            // Store temp files and dispatch job
+            // Store temp files and get FULL PATHS for the job
             $featuredTempPath = null;
             $galleryTempPaths = [];
 
             if ($request->hasFile('featured_image')) {
-                $featuredTempPath = $request->file('featured_image')->store('temp', 'local');
+                $tempStoragePath = $request->file('featured_image')->store('temp', 'local');
+                // Convert to full filesystem path
+                $featuredTempPath = Storage::disk('local')->path($tempStoragePath);
             }
 
             if ($request->hasFile('gallery_images')) {
                 foreach ($request->file('gallery_images') as $image) {
-                    $galleryTempPaths[] = $image->store('temp', 'local');
+                    $tempStoragePath = $image->store('temp', 'local');
+                    // Convert to full filesystem path
+                    $galleryTempPaths[] = Storage::disk('local')->path($tempStoragePath);
                 }
             }
 
-            // Dispatch job for async processing
+            // Dispatch job for async processing with FULL PATHS
             if ($featuredTempPath || !empty($galleryTempPaths)) {
                 ProcessProductImages::dispatch($product->id, $featuredTempPath, $galleryTempPaths);
             }
